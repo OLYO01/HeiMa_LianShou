@@ -1,0 +1,10 @@
+2020-08-22 16:57:10,913 - auto_main.py[line:209] - ERROR: 
+Traceback (most recent call last):
+  File "E:/Desktop/test1/auto_main.py", line 201, in main
+    start_TLIAS_exe(DIR_PATH)
+  File "E:/Desktop/test1/auto_main.py", line 188, in start_TLIAS_exe
+    login()
+  File "E:/Desktop/test1/auto_main.py", line 46, in login
+    raise Exception('没找到账号登录按钮，程序终止！')
+Exception: 没找到账号登录按钮，程序终止！
+

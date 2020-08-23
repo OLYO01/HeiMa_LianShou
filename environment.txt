@@ -1,0 +1,6 @@
+baidu-aip==2.2.18.0
+numpy==1.18.3
+opencv-python==4.2.0.34
+Pillow==7.1.2
+psutil==5.7.0
+pywin32==227
