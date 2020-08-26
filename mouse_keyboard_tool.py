@@ -7,7 +7,7 @@ import win32con
 import win32gui
 
 
-def auto_FindWindow(className=None, WindowsTitle=None):
+def auto_FindWindow(className=None, WindowsTitle=None,times=30):
     wait_time = 0
     while True:
         handle_0 = win32gui.FindWindow(className, WindowsTitle)
@@ -18,7 +18,7 @@ def auto_FindWindow(className=None, WindowsTitle=None):
             time.sleep(1)  # 没找到登录窗口等待1秒
             wait_time += 1
             # 超过10秒没找到窗口句柄,断言失败，报错
-            assert wait_time < 30, '查找窗口超时！'
+            assert wait_time < times, '查找窗口超时！'
 
 
 def cursor_point():  # 获取当前鼠标位置

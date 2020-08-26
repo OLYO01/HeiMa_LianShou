@@ -8,3 +8,95 @@ Traceback (most recent call last):
     raise Exception('没找到账号登录按钮，程序终止！')
 Exception: 没找到账号登录按钮，程序终止！
 
+2020-08-24 19:59:33,496 - auto_main.py[line:224] - ERROR: 
+Traceback (most recent call last):
+  File "E:/Desktop/test1/auto_main.py", line 211, in main
+    start_TLIAS_exe(DIR_PATH)
+  File "E:/Desktop/test1/auto_main.py", line 189, in start_TLIAS_exe
+    login()
+  File "E:/Desktop/test1/auto_main.py", line 47, in login
+    raise Exception('没找到账号登录按钮，程序终止！')
+Exception: 没找到账号登录按钮，程序终止！
+
+2020-08-24 20:02:11,581 - auto_main.py[line:224] - ERROR: 
+Traceback (most recent call last):
+  File "E:/Desktop/test1/auto_main.py", line 211, in main
+    start_TLIAS_exe(DIR_PATH)
+  File "E:/Desktop/test1/auto_main.py", line 190, in start_TLIAS_exe
+    move_win()
+  File "E:\Desktop\test1\into_course3.py", line 25, in move_win
+    view_handle = auto_FindWindow('Qt5QWindowIcon', 'TLIAS客户端')
+  File "E:\Desktop\test1\mouse_keyboard_tool.py", line 21, in auto_FindWindow
+    assert wait_time < 30, '查找窗口超时！'
+AssertionError: 查找窗口超时！
+
+2020-08-24 20:03:25,252 - auto_main.py[line:224] - ERROR: 
+Traceback (most recent call last):
+  File "E:/Desktop/test1/auto_main.py", line 211, in main
+    start_TLIAS_exe(DIR_PATH)
+  File "E:/Desktop/test1/auto_main.py", line 189, in start_TLIAS_exe
+    login()
+  File "E:/Desktop/test1/auto_main.py", line 47, in login
+    raise Exception('没找到账号登录按钮，程序终止！')
+Exception: 没找到账号登录按钮，程序终止！
+
+2020-08-25 05:04:29,355 - auto_main.py[line:224] - ERROR: 
+Traceback (most recent call last):
+  File "auto_main.py", line 213, in main
+    start_record_exe(Record_PATH)
+  File "auto_main.py", line 173, in start_record_exe
+    win32gui.SetForegroundWindow(hwnd)
+pywintypes.error: (0, 'SetForegroundWindow', 'No error message is available')
+
+2020-08-25 06:37:24,337 - auto_main.py[line:228] - ERROR: 
+Traceback (most recent call last):
+  File "E:\Desktop\test1\capture_findPicture_tool.py", line 117, in find_picture_basic
+    target = window_capture(hwnd, pos)
+  File "E:\Desktop\test1\capture_findPicture_tool.py", line 18, in window_capture
+    hwndDC = win32gui.GetWindowDC(hwnd)
+pywintypes.error: (1400, 'GetWindowDC', '无效的窗口句柄。')
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "auto_main.py", line 221, in main
+    breakpoint_record()
+  File "auto_main.py", line 103, in breakpoint_record
+    title_location(course1, course2_path, save_path_course2, True)
+  File "E:\Desktop\test1\into_course3.py", line 496, in title_location
+    r'capture/memory_archive\course4.png')
+  File "E:\Desktop\test1\into_course3.py", line 147, in Screen_recording
+    pause_point = find_picture(pause_point_img, hwnd, num_storey=2, tpl_is_memory=True)
+  File "E:\Desktop\test1\capture_findPicture_tool.py", line 192, in find_picture
+    tpl_is_memory=tpl_is_memory,one_point=one_point)
+  File "E:\Desktop\test1\capture_findPicture_tool.py", line 126, in find_picture_basic
+    assert 0, f'载入目标图像失败！\n' \
+AssertionError: 载入目标图像失败！
+报错信息：(1400, 'GetWindowDC', '无效的窗口句柄。')
+已停止程序
+
+2020-08-25 06:38:53,627 - auto_main.py[line:228] - ERROR: 
+Traceback (most recent call last):
+  File "E:\Desktop\test1\capture_findPicture_tool.py", line 117, in find_picture_basic
+    target = window_capture(hwnd, pos)
+  File "E:\Desktop\test1\capture_findPicture_tool.py", line 18, in window_capture
+    hwndDC = win32gui.GetWindowDC(hwnd)
+pywintypes.error: (1400, 'GetWindowDC', '无效的窗口句柄。')
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "auto_main.py", line 221, in main
+    breakpoint_record()
+  File "auto_main.py", line 103, in breakpoint_record
+    title_location(course1, course2_path, save_path_course2, True)
+  File "E:\Desktop\test1\into_course3.py", line 431, in title_location
+    cur_img_h = find_picture(r'capture\获取置顶高度图片.png', view_handle)[0][1]
+  File "E:\Desktop\test1\capture_findPicture_tool.py", line 192, in find_picture
+    tpl_is_memory=tpl_is_memory,one_point=one_point)
+  File "E:\Desktop\test1\capture_findPicture_tool.py", line 126, in find_picture_basic
+    assert 0, f'载入目标图像失败！\n' \
+AssertionError: 载入目标图像失败！
+报错信息：(1400, 'GetWindowDC', '无效的窗口句柄。')
+已停止程序
+

@@ -3,15 +3,17 @@
 # @Author  : LY
 
 import os
+import ctypes, sys
 import logging
 import traceback
 import json
-from config import DIR_PATH, course2_download_list, SAVE_PATH, Record_PATH, BREAK_POINT_RECORD,course1_download
-from start_exe_tool import run_exe
+from config import DIR_PATH, course2_download_list, SAVE_PATH, Record_PATH, BREAK_POINT_RECORD, course1_download
+from start_exe_tool import run_exe,check_exe
 from mouse_keyboard_tool import *
 from capture_findPicture_tool import find_picture
 from into_course2 import click_into_course2, confirm_course
 from into_course3 import check_course2, title_location, path_if_exist, move_win
+
 
 # 设置出错的日志
 def log_init():
@@ -189,38 +191,97 @@ def start_TLIAS_exe(PATH):
     move_win()
     time.sleep(1)
 
-
 def main():
-    restart = True
-    log = log_init()
-    while restart:
-        # 如果报错，重启程序，继续录制
-        try:
-            # 关闭循环
-            restart = False
-            start_TLIAS_exe(DIR_PATH)
-            start_record_exe(Record_PATH)
-            二级课程自选列表 = course2_download_list  # '百度人工智能课程'
-            save_path = SAVE_PATH
-            breakpoint_record()
-            open_course(course1_download, 二级课程自选列表, save_path)
-        except Exception:
-            error_data = traceback.format_exc()
-            log.error(error_data)
-            restart = True
-            print('出现一次意外报错！⊙﹏⊙‖∣，已重新启动程序', '*' * 50)
+    """
+    程序入口
+    """
+    if is_admin():
+        restart = True
+        log = log_init()
+        while restart:
+            # 如果报错，重启程序，继续录制
+            try:
+                # 关闭循环
+                restart = False
+                hightlight_old_window()
+                start_TLIAS_exe(DIR_PATH)
+                start_record_exe(Record_PATH)
+                二级课程自选列表 = course2_download_list  # '百度人工智能课程'
+                save_path = SAVE_PATH
+                breakpoint_record()
+                open_course(course1_download, 二级课程自选列表, save_path)
+            except Exception:
+                error_data = traceback.format_exc()
+                log.error(error_data)
+                restart = True
+                print('出现一次意外报错！⊙﹏⊙‖∣，已重新启动程序', '*' * 50)
+    else:
+        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
 
+def is_admin():
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin()
+    except:
+        return False
 
 def test():
-    start_TLIAS_exe(DIR_PATH)
-    start_record_exe(Record_PATH)
-    二级课程自选列表 = course2_download_list  # '百度人工智能课程'
-    save_path = SAVE_PATH
-    breakpoint_record()
-    open_course(course1_download, 二级课程自选列表, save_path)
+    # 命令行窗口标题C:\Windows\system32\cmd.exe
+    if is_admin():
+        # 调整命令窗口布局
+        hightlight_old_window()
+        # # 启动TLIAS客户端
+        # start_TLIAS_exe(DIR_PATH)
+        # # 启动录屏软件客户端
+        # start_record_exe(Record_PATH)
+    else:
+        # 弹出UAC提权窗口，提权成功后会新开管理员权限窗口运行后续代码
+        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
+
+def hightlight_old_window():
+    """
+    遍历windows 所有可显示的窗口句柄及窗口标题，以确定该程序是否多开，关闭多开的程序
+    """
+    # 检测是否入口程序是否在运行
+    # bat和pycharm普通启动会开新窗口
+    interpreter_path = r'\env_LY\Scripts\python.exe'
+    abs_path = os.path.abspath(__file__)
+    window_path = os.path.dirname(abs_path) + interpreter_path
+    # 把window_path转换成符合当前系统的分隔符，2个替换有一个会生效
+    Window_abs_path = window_path.replace('/', os.sep)
+    Window_abs_path = Window_abs_path.replace('\\', os.sep)
+    # 输出结果应该为：E:\Desktop\test1\env_LY\Scripts\python.exe
+    # print(f'Window_abs_path: {Window_abs_path}')
+    LPARAM = None
+    hwnds = []
+    def get_all_hwnd(hwnd,LPARAM2):
+        """
+        :param hwnd: 接收win32gui.EnumWindows遍历传来的窗口句柄
+        :param LPARAM2: 接收win32gui.EnumWindows传来的自定义参数
+        """
+        if win32gui.IsWindow(hwnd) and win32gui.IsWindowEnabled(hwnd) and win32gui.IsWindowVisible(hwnd):
+            # 如果该窗口句柄标题和入口程序相同
+            if win32gui.GetWindowText(hwnd)==Window_abs_path:
+                # 加入匹配到的窗口句柄到窗口句柄列表中
+                hwnds.append(hwnd)
+            # 窗口被点选后，标题会多出选择二字
+            if win32gui.GetWindowText(hwnd) == ('选择'+Window_abs_path):
+                # 加入匹配到的窗口句柄到窗口句柄列表中
+                hwnds.append(hwnd)
+    # print(f'hwnds: {hwnds}')
+    # 遍历所有窗口的句柄依次传递给回调函数，同时再给回调函数传参
+    win32gui.EnumWindows(get_all_hwnd,LPARAM)
+    # 还原窗口，后开启的窗口句柄会在hwnds靠后的索引位置
+    win32gui.SendMessage(hwnds[0], win32con.WM_SYSCOMMAND, win32con.SC_RESTORE, 0)
+    # 移动窗口位置
+    win32gui.SetWindowPos(hwnds[0], win32con.HWND_TOPMOST, 1110, 0, 805, 1030, win32con.SWP_SHOWWINDOW)
+    # 使该句柄窗口为当前活动窗口：最顶层显示
+    win32gui.SetForegroundWindow(hwnds[0])
+    if len(hwnds)>=2:
+        # 退出本程序，留下旧窗口
+        exit()
 
 
 if __name__ == '__main__':
     main()
     # test()
-    ##
+    # C:\Users\LY\AppData\Local\Temp\oCam\oCam

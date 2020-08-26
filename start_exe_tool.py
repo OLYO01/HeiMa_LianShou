@@ -24,7 +24,7 @@ def check_exe(DIR_PATH,kill_exe=True):
                 command_str = f'taskkill /F /T /IM {base_name}'
                 os.system(command_str)
                 return 1
-            print(f"{base_name}程序正在运行中...")
+            print(f"{base_name}程序正在运行中,请手动关闭该程序...")
 
 def run_exe(DIR_PATH):
     """
@@ -39,5 +39,6 @@ def run_exe(DIR_PATH):
 
 
 if __name__ == '__main__':
-    run_exe(Record_PATH)
+    # run_exe(Record_PATH)
     # run_exe(DIR_PATH)
+    check_exe(r'E:\Desktop\test1\env_LY\Scripts\python.exe')
