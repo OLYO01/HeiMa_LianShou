@@ -100,3 +100,61 @@ AssertionError: 载入目标图像失败！
 报错信息：(1400, 'GetWindowDC', '无效的窗口句柄。')
 已停止程序
 
+2020-08-30 13:00:13,908 - auto_main.py[line:334] - ERROR: 
+Traceback (most recent call last):
+  File "auto_main.py", line 326, in main
+    start_TLIAS_exe(DIR_PATH)
+  File "auto_main.py", line 192, in start_TLIAS_exe
+    move_win()
+  File "E:\Desktop\test1\into_course3.py", line 25, in move_win
+    view_handle = auto_FindWindow('Qt5QWindowIcon', 'TLIAS客户端')
+  File "E:\Desktop\test1\mouse_keyboard_tool.py", line 21, in auto_FindWindow
+    assert wait_time < times, '查找窗口超时！'
+AssertionError: 查找窗口超时！
+
+2020-08-30 15:49:04,882 - auto_main.py[line:345] - ERROR: 
+Traceback (most recent call last):
+  File "auto_main.py", line 336, in main
+    start_TLIAS_exe(DIR_PATH)
+  File "auto_main.py", line 191, in start_TLIAS_exe
+    login()
+  File "auto_main.py", line 49, in login
+    raise Exception('没找到账号登录按钮，程序终止！')
+Exception: 没找到账号登录按钮，程序终止！
+
+2020-08-30 15:49:09,990 - auto_main.py[line:345] - ERROR: 
+Traceback (most recent call last):
+  File "auto_main.py", line 336, in main
+    start_TLIAS_exe(DIR_PATH)
+  File "auto_main.py", line 191, in start_TLIAS_exe
+    login()
+  File "auto_main.py", line 49, in login
+    raise Exception('没找到账号登录按钮，程序终止！')
+Exception: 没找到账号登录按钮，程序终止！
+
+2020-08-30 15:49:09,992 - auto_main.py[line:345] - ERROR: 
+Traceback (most recent call last):
+  File "auto_main.py", line 332, in main
+    hightlight_old_window()
+  File "auto_main.py", line 257, in hightlight_old_window
+    win32gui.SetForegroundWindow(hwnds[0])
+pywintypes.error: (0, 'SetForegroundWindow', 'No error message is available')
+
+2020-08-30 15:49:15,094 - auto_main.py[line:345] - ERROR: 
+Traceback (most recent call last):
+  File "auto_main.py", line 336, in main
+    start_TLIAS_exe(DIR_PATH)
+  File "auto_main.py", line 191, in start_TLIAS_exe
+    login()
+  File "auto_main.py", line 49, in login
+    raise Exception('没找到账号登录按钮，程序终止！')
+Exception: 没找到账号登录按钮，程序终止！
+
+2020-08-30 15:49:15,098 - auto_main.py[line:345] - ERROR: 
+Traceback (most recent call last):
+  File "auto_main.py", line 332, in main
+    hightlight_old_window()
+  File "auto_main.py", line 257, in hightlight_old_window
+    win32gui.SetForegroundWindow(hwnds[0])
+pywintypes.error: (0, 'SetForegroundWindow', 'No error message is available')
+

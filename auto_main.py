@@ -3,12 +3,13 @@
 # @Author  : LY
 
 import os
-import ctypes, sys
+import ctypes, sys, re
 import logging
 import traceback
 import json
-from config import DIR_PATH, course2_download_list, SAVE_PATH, Record_PATH, BREAK_POINT_RECORD, course1_download
-from start_exe_tool import run_exe,check_exe
+from config import DIR_PATH, course2_download_list, SAVE_PATH, Record_PATH, BREAK_POINT_RECORD, course1_download, \
+    Custom_Settings
+from start_exe_tool import run_exe, check_exe
 from mouse_keyboard_tool import *
 from capture_findPicture_tool import find_picture
 from into_course2 import click_into_course2, confirm_course
@@ -191,38 +192,13 @@ def start_TLIAS_exe(PATH):
     move_win()
     time.sleep(1)
 
-def main():
-    """
-    程序入口
-    """
-    if is_admin():
-        restart = True
-        log = log_init()
-        while restart:
-            # 如果报错，重启程序，继续录制
-            try:
-                # 关闭循环
-                restart = False
-                hightlight_old_window()
-                start_TLIAS_exe(DIR_PATH)
-                start_record_exe(Record_PATH)
-                二级课程自选列表 = course2_download_list  # '百度人工智能课程'
-                save_path = SAVE_PATH
-                breakpoint_record()
-                open_course(course1_download, 二级课程自选列表, save_path)
-            except Exception:
-                error_data = traceback.format_exc()
-                log.error(error_data)
-                restart = True
-                print('出现一次意外报错！⊙﹏⊙‖∣，已重新启动程序', '*' * 50)
-    else:
-        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
 
 def is_admin():
     try:
         return ctypes.windll.shell32.IsUserAnAdmin()
     except:
         return False
+
 
 def test():
     # 命令行窗口标题C:\Windows\system32\cmd.exe
@@ -237,6 +213,7 @@ def test():
         # 弹出UAC提权窗口，提权成功后会新开管理员权限窗口运行后续代码
         ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
 
+
 def hightlight_old_window():
     """
     遍历windows 所有可显示的窗口句柄及窗口标题，以确定该程序是否多开，关闭多开的程序
@@ -246,39 +223,116 @@ def hightlight_old_window():
     interpreter_path = r'\env_LY\Scripts\python.exe'
     abs_path = os.path.abspath(__file__)
     window_path = os.path.dirname(abs_path) + interpreter_path
-    # 把window_path转换成符合当前系统的分隔符，2个替换有一个会生效
     Window_abs_path = window_path.replace('/', os.sep)
     Window_abs_path = Window_abs_path.replace('\\', os.sep)
     # 输出结果应该为：E:\Desktop\test1\env_LY\Scripts\python.exe
     # print(f'Window_abs_path: {Window_abs_path}')
     LPARAM = None
     hwnds = []
-    def get_all_hwnd(hwnd,LPARAM2):
-        """
-        :param hwnd: 接收win32gui.EnumWindows遍历传来的窗口句柄
-        :param LPARAM2: 接收win32gui.EnumWindows传来的自定义参数
-        """
+
+    def get_all_hwnd(hwnd, LPARAM2):
         if win32gui.IsWindow(hwnd) and win32gui.IsWindowEnabled(hwnd) and win32gui.IsWindowVisible(hwnd):
-            # 如果该窗口句柄标题和入口程序相同
-            if win32gui.GetWindowText(hwnd)==Window_abs_path:
+            if win32gui.GetWindowText(hwnd) == Window_abs_path:
                 # 加入匹配到的窗口句柄到窗口句柄列表中
                 hwnds.append(hwnd)
             # 窗口被点选后，标题会多出选择二字
-            if win32gui.GetWindowText(hwnd) == ('选择'+Window_abs_path):
+            if win32gui.GetWindowText(hwnd) == ('选择' + Window_abs_path):
                 # 加入匹配到的窗口句柄到窗口句柄列表中
                 hwnds.append(hwnd)
+
     # print(f'hwnds: {hwnds}')
-    # 遍历所有窗口的句柄依次传递给回调函数，同时再给回调函数传参
-    win32gui.EnumWindows(get_all_hwnd,LPARAM)
-    # 还原窗口，后开启的窗口句柄会在hwnds靠后的索引位置
+    win32gui.EnumWindows(get_all_hwnd, LPARAM)
     win32gui.SendMessage(hwnds[0], win32con.WM_SYSCOMMAND, win32con.SC_RESTORE, 0)
-    # 移动窗口位置
-    win32gui.SetWindowPos(hwnds[0], win32con.HWND_TOPMOST, 1110, 0, 805, 1030, win32con.SWP_SHOWWINDOW)
+    win32gui.SetWindowPos(hwnds[0], win32con.HWND_NOTOPMOST, 1110, 0, 805, 1030, win32con.SWP_SHOWWINDOW)
     # 使该句柄窗口为当前活动窗口：最顶层显示
     win32gui.SetForegroundWindow(hwnds[0])
-    if len(hwnds)>=2:
+    if len(hwnds) >= 2:
         # 退出本程序，留下旧窗口
         exit()
+
+
+def recording_config_init():
+    # 创建录屏目录
+    try:
+        path_if_exist(SAVE_PATH, True)
+    except Exception:
+        print(f'自动创建目录 {SAVE_PATH} 失败，程序终止！\n'
+              f'请手动创建该目录后再重新启动程序')
+        exit()
+    # 获得配置文件路径
+    recording_config_path = os.environ['TEMP'] + r'\oCam\oCam\Config.ini'
+    # 把window_path转换成符合当前系统的分隔符，2个替换有一个会生效
+    recording_config_path = recording_config_path.replace('/', os.sep)
+    recording_config_path = recording_config_path.replace('\\', os.sep)
+
+    def modify_copy_config(copy_origin_path):
+        # 根据config.py生成基础模板配置文件
+        # 读取基本模板配置文件
+        with open(copy_origin_path, 'r', encoding='gbk') as file:
+            unicode_data = file.read()
+        re_str = r'lbledtOutputPath=(.*)'
+        new_data = 'lbledtOutputPath=' + SAVE_PATH
+        new_config_data = re.sub(re_str, new_data, unicode_data)
+        # 创建视频配置文件并根据config.py写入最新配置
+        with open(recording_config_path, 'w', encoding='gbk')as file:
+            file.write(new_config_data)
+
+    # 如果没有配置文件，复制粘贴模板配置文件
+    if not os.path.exists(recording_config_path):
+        path = 'oCam\Config.ini'
+        modify_copy_config(path)
+        print('录屏配置模块初始化成功...')
+    # 如果有配置文件，查看录屏放置地址是否默认地址
+    else:
+        # 读取当前录屏配置文件
+        with open(recording_config_path, 'r', encoding='gbk') as file:
+            unicode_data2 = file.read()
+        re_str2 = r'lbledtOutputPath=(.*)'
+        result = re.search(re_str2, unicode_data2).group(1)
+        # 若不是config.py文件下载地址，复制粘贴默认配置文件
+        if result != SAVE_PATH:
+            if Custom_Settings == True:
+                modify_copy_config(recording_config_path)
+                print('录屏配置模块已完成录屏保存地址修改...')
+            else:
+                path = 'oCam\Config.ini'
+                modify_copy_config(path)
+                print('录屏配置模块重新初始化成功...')
+        # 若是config.py文件下载地址，直接启动录屏文件
+        else:
+            print('录屏配置模块自检正常...')
+
+def main():
+    """
+    程序入口
+    """
+    if is_admin():
+        restart = True
+        log = log_init()
+        while restart:
+            # 如果报错，重启程序，继续录制
+            try:
+                # 关闭循环
+                restart = False
+                # 打开命令行窗口
+                hightlight_old_window()
+                # 初始化录屏配置
+                recording_config_init()
+                # 打开黑马客户端
+                start_TLIAS_exe(DIR_PATH)
+                # 打开录屏客户端
+                start_record_exe(Record_PATH)
+                #
+                二级课程自选列表 = course2_download_list  # '百度人工智能课程'
+                breakpoint_record()
+                open_course(course1_download, 二级课程自选列表, SAVE_PATH)
+            except Exception:
+                error_data = traceback.format_exc()
+                log.error(error_data)
+                restart = True
+                print('出现一次意外报错！⊙﹏⊙‖∣，已重新启动程序', '*' * 50)
+    else:
+        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
 
 
 if __name__ == '__main__':

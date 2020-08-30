@@ -77,6 +77,9 @@ def into_play():
     video_handle = auto_FindWindow('Qt5QWindow', '播放器')
     flag_1 = 'mouse'
     while True:
+        # 播放视频窗口最前端显示
+        # win32gui.SetWindowPos(video_handle, win32con.HWND_TOPMOST, 0, 0, 1920, 1080, win32con.SWP_SHOWWINDOW)
+        win32gui.SetForegroundWindow(video_handle)
         # 显示视频播放状态栏
         mouse_move(1919, 1060)
         try:
